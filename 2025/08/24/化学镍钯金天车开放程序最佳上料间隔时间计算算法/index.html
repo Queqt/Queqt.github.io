@@ -14,7 +14,7 @@
 <meta property="og:description" content="摘要本文通过对化学镍钯金线体的天车运行逻辑入手，使用韦恩图获取最短的上料间隔时间并在生产现场中使用ST语言对PLC进行逻辑编程实现理论算法的实际应用；  引言1、化学镍钯金天车运行是基于化学镍钯金线体（以下简称：主线）的71个槽体工艺浸泡时间来调整6台天车的动作，使得每个槽体的挂篮可以挂载在飞巴上被天车搬运在不同槽体之间，且挂篮必须严格按照预设浸泡槽体顺序、预设槽体种类和预设浸泡时间（以下简称：预">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-08-24T11:14:40.000Z">
-<meta property="article:modified_time" content="2025-08-26T14:41:07.600Z">
+<meta property="article:modified_time" content="2025-08-31T14:24:00.523Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="程序">
 <meta property="article:tag" content="PLC">
@@ -180,12 +180,25 @@
 </code></pre>
 <h1 id="现场作业的规避要求分析"><a href="#现场作业的规避要求分析" class="headerlink" title="现场作业的规避要求分析"></a>现场作业的规避要求分析</h1><pre><code>无
 </code></pre>
-<h1 id="理论算法实现"><a href="#理论算法实现" class="headerlink" title="理论算法实现"></a>理论算法实现</h1><p>   以天车天车逻辑的规避要求分析结论为基础，在挂篮出槽后考虑预设参数的规避要求分析结论对上料间隔时间的影响；</p>
+<h1 id="理论算法实现"><a href="#理论算法实现" class="headerlink" title="理论算法实现"></a>理论算法实现</h1><p>   以天车天车逻辑的规避要求分析结论为基础，在挂篮出槽后考虑预设参数的规避要求分析结论对上料间隔时间的影响；<br>    情况1：所有槽体都使用单载位：<br>        由于单载位不需要考虑同时进出槽体的情况，故单载位只需要考虑天车结论1、天车结论3和预设参数的规避要求分析结论；<br>    情况2：所有双载位都启用双槽：<br>        由于双载位需要考虑同时进出槽体的情况，故双载位需要考虑天车天车结论1、天车结论2、天车结论3和预设参数的规避要求分析结论；</p>
+<pre><code>以上我们发现，单载位属于双载位的子集，故以下主要讨论双载位；
+    对于A车：由于A车只搬运预溶出槽+上料位，故A车的运行时间范围为：（0-预溶出槽-25s）U（预溶出槽+50s-无穷大）;
+    对于B车：由于B车运行区间都为单载位，故B车运行时间范围为：（0-810s）U (无穷大)；
+    对于C车：由于C车运行区间都为单载位，故C车运行时间范围为：(0-810s) U(无穷大)；
+    对于D车：由于D车运行区间为镍槽双载位+镍后水洗锁定天车，故D车运行时间范围为;(0-镍槽-50s) u(镍槽+250s-无穷大)
+    对于E车：由于E车运行区间为钯槽双载位+钯后水洗锁定天车，故E车运行时间范围为;(0-钯槽-50s）U（钯槽+270s-无穷大)
+    对于F车：由于F车运行区间为金槽双载位+金后水洗锁定天车，故F车运行时间范围为;(0-金槽-50s）U（金槽+275s-无穷大) 
+
+    当槽体为单载位时，只需要考虑各个天车的上限区间即可；
+
+实现程序如下：
+    
+</code></pre>
 <h1 id="实际现场测试"><a href="#实际现场测试" class="headerlink" title="实际现场测试"></a>实际现场测试</h1><h1 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h1><h1 id="讨论"><a href="#讨论" class="headerlink" title="讨论"></a>讨论</h1><h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2025/08/24/%E5%8C%96%E5%AD%A6%E9%95%8D%E9%92%AF%E9%87%91%E5%A4%A9%E8%BD%A6%E5%BC%80%E6%94%BE%E7%A8%8B%E5%BA%8F%E6%9C%80%E4%BD%B3%E4%B8%8A%E6%96%99%E9%97%B4%E9%9A%94%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97%E7%AE%97%E6%B3%95/" data-id="cmesnn3wx000284q534febriq" data-title="化学镍钯金天车开放程序最佳上料间隔时间计算算法" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2025/08/24/%E5%8C%96%E5%AD%A6%E9%95%8D%E9%92%AF%E9%87%91%E5%A4%A9%E8%BD%A6%E5%BC%80%E6%94%BE%E7%A8%8B%E5%BA%8F%E6%9C%80%E4%BD%B3%E4%B8%8A%E6%96%99%E9%97%B4%E9%9A%94%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97%E7%AE%97%E6%B3%95/" data-id="cmezs8ftm0001r8q5cs3l0vpb" data-title="化学镍钯金天车开放程序最佳上料间隔时间计算算法" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
