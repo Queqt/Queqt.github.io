@@ -71,6 +71,44 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-电机-泵头" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/08/31/%E7%94%B5%E6%9C%BA-%E6%B3%B5%E5%A4%B4/" class="article-date">
+  <time class="dt-published" datetime="2025-08-31T14:30:03.000Z" itemprop="datePublished">2025-08-31</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2025/08/31/%E7%94%B5%E6%9C%BA-%E6%B3%B5%E5%A4%B4/">电机+泵头</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2025/08/31/%E7%94%B5%E6%9C%BA-%E6%B3%B5%E5%A4%B4/" data-id="cmeztjl4a0001xcq51x7n1j1j" data-title="电机+泵头" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-化学镍钯金天车开放程序最佳上料间隔时间计算算法" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2025/08/24/%E5%8C%96%E5%AD%A6%E9%95%8D%E9%92%AF%E9%87%91%E5%A4%A9%E8%BD%A6%E5%BC%80%E6%94%BE%E7%A8%8B%E5%BA%8F%E6%9C%80%E4%BD%B3%E4%B8%8A%E6%96%99%E9%97%B4%E9%9A%94%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97%E7%AE%97%E6%B3%95/" class="article-date">
@@ -185,14 +223,750 @@
 
     当槽体为单载位时，只需要考虑各个天车的上限区间即可；
 
-实现程序如下：
-    
+实现程序如下（基于VBA编程语言）：
+
+Sub ProcessAllData()
+Dim startRow As Long, endRow As Long
+Dim dataRange As Range
+Dim inputData(1 To 2, 1 To 7) As Double
+Dim result As Double
+Dim i As Long, j As Long, k As Long
+
+&#39; 设置总行数
+endRow = Sheet1.Cells(Sheet1.Rows.Count, 1).End(xlUp).Row
+
+
+Application.Calculation = xlCalculationManual
 </code></pre>
+<p>Application.ScreenUpdating &#x3D; False</p>
+<pre><code>&#39; 从第1行开始，每次处理2行，步长为2
+For startRow = 2 To endRow
+    &#39; 确保不超过总行数
+    If startRow + 1 &gt; endRow Then Exit For
+    
+    &#39; 从Sheet1抓取当前2行4列数据
+    Set dataRange = Sheet1.Range(Sheet1.Cells(startRow, 1), Sheet1.Cells(startRow + 1, 7))
+    
+    &#39; 将数据加载到数组中
+    
+    For i = 1 To 2
+        For j = 1 To 7
+            inputData(i, j) = dataRange.Cells(i, j).Value
+        Next j
+    Next i
+    
+    &#39; 调用ST函数进行处理
+    result = ST(inputData)
+    
+    &#39; 将结果写入第二行的第五列（当前组的第二行）
+    Sheet1.Cells(startRow + 1, 8).Value = result
+    
+     For i = 1 To 2
+        For j = 1 To 4
+            inputData(i, j) = 0
+        Next j
+    Next i
+    
+    &#39; 可选：显示处理进度
+    Application.StatusBar = &quot;处理进度: &quot; &amp; startRow &amp; &quot;-&quot; &amp; (startRow + 1) &amp; &quot;/&quot; &amp; endRow
+    DoEvents
+Next startRow
+
+Application.Calculation = xlCalculationAutomatic
+</code></pre>
+<p>Application.ScreenUpdating &#x3D; True</p>
+<pre><code>&#39; 清除状态栏
+Application.StatusBar = False
+MsgBox &quot;数据处理完成！共处理 &quot; &amp; endRow / 2 &amp; &quot; 组数据。&quot;
+</code></pre>
+<p>End Sub</p>
+<p>Function ST(dataArray() As Double) As Double</p>
+<p>‘定义变量<br>Dim Cycle_time_A As Long<br>Cycle_time_A &#x3D; 0<br>Dim NI_timer As Long<br>Dim PD_timer As Long<br>Dim AU_time As Long<br>Dim YRC_time As Long</p>
+<p>Dim NI_count As Long<br>Dim PD_count As Long<br>Dim AU_count As Long</p>
+<p>Dim YRC_now_time As Long<br>Dim NI_now_time As Long<br>Dim PD_now_time As Long<br>Dim AU_now_time As Long</p>
+<p>‘内部变量<br>Dim Dev_YRC_A As Long</p>
+<p>Dim Interval_A_5_down As Long<br>Dim Interval_A_5_up As Long</p>
+<p>Dim Interval_A_4_down As Long<br>Dim Interval_A_4_up As Long</p>
+<p>Dim Interval_A_3_down As Long<br>Dim Interval_A_3_up As Long</p>
+<p>Dim Interval_A_2_down As Long<br>Dim Interval_A_2_up As Long</p>
+<p>Dim Interval_A_1_down As Long<br>Dim Interval_A_1_up As Long</p>
+<p>Dim C(1 To 6) As Long<br>Dim ZZZ(1 To 15) As Long</p>
+<p>Dim T_A_temp As Long<br>Dim Dev_A(1 To 6) As Long</p>
+<p>Dim Transfer(1 To 7) As Long</p>
+<p>Dim ZZ(1 To 6) As Long<br>Dim Z(6) As Long</p>
+<p>Dim QQT As Long</p>
+<p>Dim T_A(1 To 6) As Long<br>Dim Q_A(1 To 6) As Long</p>
+<p>Dim temp As Long<br>Dim j As Long<br>Dim i As Long</p>
+<p>Dim Dev_Ni_A As Long<br>Dim Dev_Pd_A As Long<br>Dim Dev_Au_A As Long</p>
+<p>Dim Interval_A_Ni_up As Long<br>Dim Interval_A_Ni_down As Long</p>
+<p>Dim Interval_A_Pd_up As Long<br>Dim Interval_A_Pd_down As Long</p>
+<p>Dim Interval_A_Au_up As Long<br>Dim Interval_A_Au_down As Long</p>
+<p>Dim Interval_A_YRC_up As Long<br>Dim Interval_A_YRC_down As Long</p>
+<p>Dim END_A As Long</p>
+<p>‘初始化所有参数</p>
+<p>END_A &#x3D; 0</p>
+<p>For i &#x3D; 1 To 6<br>        Z(i) &#x3D; 0<br>    Next i</p>
+<p>For i &#x3D; 1 To 7<br>        Transfer(i) &#x3D; 0<br>    Next i</p>
+<p>For i &#x3D; 1 To 15<br>        ZZZ(i) &#x3D; 0<br>    Next i</p>
+<p>Cycle_time_A &#x3D; 0<br>NI_timer &#x3D; 0<br>PD_timer &#x3D; 0<br>AU_time &#x3D; 0<br>YRC_time &#x3D; 0</p>
+<p>NI_count &#x3D; 0<br>PD_count &#x3D; 0<br>AU_count &#x3D; 0</p>
+<p>YRC_now_time &#x3D; 0<br>NI_now_time &#x3D; 0<br>PD_now_time &#x3D; 0<br>AU_now_time &#x3D; 0</p>
+<p>Dev_YRC_A &#x3D; 0</p>
+<p>Interval_A_5_down &#x3D; 0<br>Interval_A_5_up &#x3D; 0</p>
+<p>Interval_A_4_down &#x3D; 0<br>Interval_A_4_up &#x3D; 0</p>
+<p>Interval_A_3_down &#x3D; 0<br>Interval_A_3_up &#x3D; 0</p>
+<p>Interval_A_2_down &#x3D; 0<br>Interval_A_2_up &#x3D; 0</p>
+<p>Interval_A_1_down &#x3D; 0<br>Interval_A_1_up &#x3D; 0</p>
+<p>T_A_temp &#x3D; 0</p>
+<p>QQT &#x3D; 0</p>
+<p>temp &#x3D; 0<br>j &#x3D; 0<br>i &#x3D; 0</p>
+<p>Dev_Ni_A &#x3D; 0<br>Dev_Pd_A &#x3D; 0<br>Dev_Au_A &#x3D; 0</p>
+<p>Interval_A_Ni_up &#x3D; 0<br>Interval_A_Ni_down &#x3D; 0</p>
+<p>Interval_A_Pd_up &#x3D; 0<br>Interval_A_Pd_down &#x3D; 0</p>
+<p>Interval_A_Au_up &#x3D; 0<br>Interval_A_Au_down &#x3D; 0<br>Interval_A_YRC_up &#x3D; 0<br>Interval_A_YRC_down &#x3D; 0</p>
+<p>Dev_A(5) &#x3D; 0<br>Dev_Au_A &#x3D; 0<br>Dev_Ni_A &#x3D; 0<br>Dev_Pd_A &#x3D; 0<br>Dev_YRC_A &#x3D; 0</p>
+<p>‘将表格内数据带入寄存地址<br>YRC_now_time &#x3D; dataArray(2, 1)<br>NI_now_time &#x3D; dataArray(2, 2)<br>PD_now_time &#x3D; dataArray(2, 3)<br>AU_now_time &#x3D; dataArray(2, 4)</p>
+<p>YRC_time &#x3D; dataArray(1, 1)<br>NI_timer &#x3D; dataArray(1, 2)<br>PD_timer &#x3D; dataArray(1, 3)<br>AU_time &#x3D; dataArray(1, 4)</p>
+<p>NI_count &#x3D; dataArray(2, 5)<br>PD_count &#x3D; dataArray(2, 6)<br>AU_count &#x3D; dataArray(2, 7)</p>
+<p>‘ 1、槽体浸泡时间前后料号不一致带入周期区间内<br>ZZ(1) &#x3D; YRC_now_time<br>ZZ(2) &#x3D; NI_now_time<br>ZZ(3) &#x3D; PD_now_time<br>ZZ(4) &#x3D; AU_now_time</p>
+<p>Z(1) &#x3D; YRC_time<br>Z(2) &#x3D; NI_timer<br>Z(3) &#x3D; PD_timer<br>Z(4) &#x3D; AU_time</p>
+<p>Q_A(1) &#x3D; YRC_time - 50<br>Q_A(2) &#x3D; NI_timer - 50<br>Q_A(3) &#x3D; PD_timer - 50<br>Q_A(4) &#x3D; AU_time - 50</p>
+<p>T_A(1) &#x3D; YRC_time + 25<br>T_A(2) &#x3D; NI_timer + 250<br>T_A(3) &#x3D; PD_timer + 270<br>T_A(4) &#x3D; AU_time + 275<br>QQT &#x3D; 9999</p>
+<p>Interval_A_Ni_up &#x3D; NI_timer + 250<br>Interval_A_Ni_down &#x3D; NI_timer - 50</p>
+<p>Interval_A_Pd_up &#x3D; PD_timer + 270<br>Interval_A_Pd_down &#x3D; PD_timer - 50</p>
+<p>Interval_A_Au_up &#x3D; AU_time + 275<br>Interval_A_Au_down &#x3D; AU_time - 50</p>
+<p>Interval_A_YRC_up &#x3D; YRC_time + 25<br>Interval_A_YRC_down &#x3D; YRC_time - 50</p>
+<p>ZZZ(13) &#x3D; 0 ‘不满足区间时的额外补值之和–3&#x2F;27*)</p>
+<p>For i &#x3D; 1 To 3 ‘ 小值排序 *)<br>    For j &#x3D; i + 1 To 4<br>        If Q_A(i) &lt; Q_A(j) Then<br>            temp &#x3D; Q_A(i)<br>            Q_A(i) &#x3D; Q_A(j)<br>            Q_A(j) &#x3D; temp<br>        End If<br>    Next j<br>Next i</p>
+<p>For i &#x3D; 1 To 3 ‘ 大值排序 *)<br>    For j &#x3D; i + 1 To 4<br>        If T_A(i) &lt; T_A(j) Then<br>            temp &#x3D; T_A(i)<br>            T_A(i) &#x3D; T_A(j)<br>            T_A(j) &#x3D; temp<br>        End If<br>    Next j<br>Next i</p>
+<p>If NI_count &lt; 2 Then ‘ 排序后的位置不变，找到对应的镍槽的小值,及其后面的小值全部归零，考虑单镍槽 <em>)<br>    For j &#x3D; 1 To 4<br>        If Q_A(j) &#x3D; NI_timer - 50 Then<br>            Q_A(j) &#x3D; 0<br>        End If<br>        If Q_A(j) &#x3D; 0 Then<br>            Q_A(j + 1) &#x3D; 0<br>        End If<br>    Next j<br>    Interval_A_Ni_down &#x3D; 0 ‘3&#x2F;25</em>)<br>End If</p>
+<p>If PD_count &lt; 2 Then ‘ 排序后的位置不变，找到对应的钯槽的小值,及其后面的小值全部归零，考虑单钯槽 <em>)<br>    For j &#x3D; 1 To 4<br>        If Q_A(j) &#x3D; PD_timer - 50 Then<br>            Q_A(j) &#x3D; 0<br>        End If<br>        If Q_A(j) &#x3D; 0 Then<br>            Q_A(j + 1) &#x3D; 0<br>        End If<br>    Next j<br>    Interval_A_Pd_down &#x3D; 0 ‘3&#x2F;25</em>)<br>End If</p>
+<p>If AU_count &lt; 2 Then ‘ 排序后的位置不变，找到对应的金槽的小值,及其后面的小值全部归零，考虑单金槽 <em>)<br>    For j &#x3D; 1 To 4<br>        If Q_A(j) &#x3D; AU_time - 50 Then<br>            Q_A(j) &#x3D; 0<br>        End If<br>        If Q_A(j) &#x3D; 0 Then<br>            Q_A(j + 1) &#x3D; 0<br>        End If<br>    Next j<br>    Interval_A_Au_down &#x3D; 0 ‘3&#x2F;25</em>)<br>End If</p>
+<p>For i &#x3D; 1 To 4 ‘ 排序后的位置不变，将非零大值全部拉至720 →810*)<br>    If T_A(i) &lt; 810 Then<br>        T_A(i) &#x3D; 810<br>    End If<br>Next i</p>
+<p>For j &#x3D; 1 To 4 ‘ 排序后的位置不变，将非零小值全部拉至720 →810*)<br>    If (Q_A(j) &lt; 810) And (Q_A(j) &gt; 10) Then<br>        Q_A(j) &#x3D; 810<br>    End If<br>Next j</p>
+<p>For i &#x3D; 1 To 1 ‘控制大值，对应合理区间下限，存在区间上限满足周期不要套圈，但是区间下限不满足，这时需要不改变区间下限的情况下，再计算合理间隔时间时找到满足不套圈的区间值，在进行计算周期判断 <em>)’此段已屏蔽3&#x2F;28</em>)<br>    If (T_A(i) * 2 - 90) &lt; T_A(1) Then ‘3&#x2F;28*)<br>         T_A(i) &#x3D; 810<br>    End If<br>Next i</p>
+<p>Transfer(5) &#x3D; 0</p>
+<p>If ZZ(2) &gt; 8000 Then ‘3&#x2F;27*)<br>    ZZ(1) &#x3D; Z(1)<br>    ZZ(2) &#x3D; Z(2)<br>    ZZ(3) &#x3D; Z(3)<br>    ZZ(4) &#x3D; Z(4)<br>End If</p>
+<p> If Z(1) &lt;&gt; ZZ(1) Then ‘ 预溶出差值计算,当前挂时间短，跑得快*)<br>        Dev_YRC_A &#x3D; Z(1) - ZZ(1)<br>    End If</p>
+<p> If Z(2) &lt;&gt; ZZ(2) Then ‘ 镍槽差值计算*)<br>        Dev_Ni_A &#x3D; Z(2) - ZZ(2)<br>    End If</p>
+<p> If Z(3) &lt;&gt; ZZ(3) Then ‘ 钯槽差值计算*)<br>        Dev_Pd_A &#x3D; Z(3) - ZZ(3)<br>    End If</p>
+<p> If Z(4) &lt;&gt; ZZ(4) Then ‘ 金槽差值计算*)<br>        Dev_Au_A &#x3D; Z(4) - ZZ(4)<br>    End If</p>
+<p>‘———————————————————————————————————————————————————————–*)</p>
+<p>If (Q_A(4) &gt; 810) And (END_A &lt; 1) Then</p>
+<pre><code>For i = 1 To 10
+    If i = 1 Then
+Cycle_time_A = 810
+    End If
+    ZZZ(13) = 0
+
+ &#39;意味着既满足周期不套圈，又满足合理间隔区间*)
+T_A_temp = Cycle_time_A
+Interval_A_5_up = Q_A(4)
+Interval_A_5_down = 810
+
+ &#39;检查周期时间是否满足预溶出、镍槽、钯槽、金槽的不套圈范围，以及是否满足各个槽体的安全区间若发现增加完差值之后有不满足槽体的安全区间，则补加时间，使之满足条件*)
+ If (T_A_temp * 2) &lt; Interval_A_YRC_up Then &#39;3/24增加*)
+    ZZZ(13) = ZZZ(13) + (Interval_A_YRC_up / 2) - T_A_temp &#39;3/27*)
+    T_A_temp = T_A_temp + (Interval_A_YRC_up / 2) - T_A_temp &#39;3/28*)
+  End If
+
+                       If (T_A_temp &gt; Interval_A_YRC_down) And (T_A_temp &lt; Interval_A_YRC_up) Then
+                                 ZZZ(13) = ZZZ(13) + Interval_A_YRC_up - T_A_temp &#39;3/27*)
+                                T_A_temp = T_A_temp + Interval_A_YRC_up - T_A_temp &#39;3/28*)
+                      End If
+
+ T_A_temp = T_A_temp - Dev_YRC_A
+ 
+ If T_A_temp &lt; 810 Then
+     ZZZ(13) = ZZZ(13) + 810 - T_A_temp
+     T_A_temp = T_A_temp + 810 - T_A_temp &#39;出预溶出槽后间隔时间必须大于810秒--3/29*)
+End If
+ 
+  If (T_A_temp * 2) &lt; Interval_A_Ni_up Then &#39;3/24增加*)
+            ZZZ(13) = ZZZ(13) + (Interval_A_Ni_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Ni_up / 2) - T_A_temp &#39;3/28*)
+ End If
+
+                    If (T_A_temp &gt; Interval_A_Ni_down) And (T_A_temp &lt; Interval_A_Ni_up) Then
+                              ZZZ(13) = ZZZ(13) + Interval_A_Ni_up - T_A_temp &#39;3/27*)
+                             T_A_temp = T_A_temp + Interval_A_Ni_up - T_A_temp &#39;3/28*)
+                    End If
+
+ T_A_temp = T_A_temp - Dev_Ni_A
+                    
+                     If (T_A_temp &lt; 400) Then
+                              ZZZ(13) = ZZZ(13) + 400 - T_A_temp &#39;5/7*)
+                             T_A_temp = T_A_temp + 400 - T_A_temp &#39;5/7*)
+                    End If
+
+ If (T_A_temp * 2) &lt; Interval_A_Pd_up Then &#39;3/24增加*)
+           ZZZ(13) = ZZZ(13) + (Interval_A_Pd_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Pd_up / 2) - T_A_temp &#39;3/28*)
+End If
+
+                   If (T_A_temp &gt; Interval_A_Pd_down) And (T_A_temp &lt; Interval_A_Pd_up) Then
+                            ZZZ(13) = ZZZ(13) + Interval_A_Pd_up - T_A_temp &#39;3/27*)
+                            T_A_temp = T_A_temp + Interval_A_Pd_up - T_A_temp &#39;3/28*)
+                  End If
+
+ T_A_temp = T_A_temp - Dev_Pd_A
+
+                   If (T_A_temp &lt; 400) Then
+                              ZZZ(13) = ZZZ(13) + 400 - T_A_temp &#39;5/7*)
+                             T_A_temp = T_A_temp + 400 - T_A_temp &#39;5/7*)
+                    End If
+
+ If (T_A_temp * 2) &lt; Interval_A_Au_up Then &#39;3/24增加*)
+           ZZZ(13) = ZZZ(13) + (Interval_A_Au_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Au_up / 2) - T_A_temp &#39;3/28*)
+End If
+
+                If (T_A_temp &gt; Interval_A_Au_down) And (T_A_temp &lt; Interval_A_Au_up) Then
+                          ZZZ(13) = ZZZ(13) + Interval_A_Au_up - T_A_temp &#39;3/27*)
+                         T_A_temp = T_A_temp + Interval_A_Au_up - T_A_temp &#39;3/28*)
+               End If
+</code></pre>
+<p> ‘关于金槽的可以考虑舍弃这部分判断，但是考虑到后面的：Cycle_time_A&#x3D; T_A_temp+Dev_A(5)还是加上吧*)<br>     T_A_temp &#x3D; T_A_temp - Dev_Au_A</p>
+<pre><code> If T_A_temp &lt; 720 Then
+         ZZZ(13) = ZZZ(13) + 720 - T_A_temp
+End If
+
+ If i = 1 Then
+Cycle_time_A = 810 + ZZZ(13)
+End If
+If i &gt; 1 Then
+Cycle_time_A = Cycle_time_A + ZZZ(13)
+End If
+
+Next i
+
+END_A = END_A + 1
+</code></pre>
+<p>End If</p>
+<p>‘———————————————————————————————————————————————————————–*)</p>
+<p>If (Q_A(3) &gt; T_A(4)) And (END_A &lt; 1) Then</p>
+<pre><code>For i = 1 To 10
+    If i = 1 Then
+Cycle_time_A = T_A(4)
+    End If
+    ZZZ(13) = 0
+    T_A_temp = Cycle_time_A
+Interval_A_4_up = Q_A(3)
+Interval_A_4_down = T_A(4)
+
+ &#39;检查周期时间是否满足预溶出、镍槽、钯槽、金槽的不套圈范围，以及是否满足各个槽体的安全区间若发现增加完差值之后有不满足槽体的安全区间，则补加时间，使之满足条件*)
+ If (T_A_temp * 2) &lt; Interval_A_YRC_up Then &#39;3/24增加*)
+    ZZZ(13) = ZZZ(13) + (Interval_A_YRC_up / 2) - T_A_temp &#39;3/27*)
+    T_A_temp = T_A_temp + (Interval_A_YRC_up / 2) - T_A_temp &#39;3/28*)
+  End If
+
+                       If (T_A_temp &gt; Interval_A_YRC_down) And (T_A_temp &lt; Interval_A_YRC_up) Then
+                                 ZZZ(13) = ZZZ(13) + Interval_A_YRC_up - T_A_temp &#39;3/27*)
+                                T_A_temp = T_A_temp + Interval_A_YRC_up - T_A_temp &#39;3/28*)
+                      End If
+
+ T_A_temp = T_A_temp - Dev_YRC_A
+ 
+ If T_A_temp &lt; 810 Then
+     ZZZ(13) = ZZZ(13) + 810 - T_A_temp
+     T_A_temp = T_A_temp + 810 - T_A_temp &#39;出预溶出槽后间隔时间必须大于720秒→810--3/29*)
+End If
+ 
+  If (T_A_temp * 2) &lt; Interval_A_Ni_up Then &#39;3/24增加*)
+            ZZZ(13) = ZZZ(13) + (Interval_A_Ni_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Ni_up / 2) - T_A_temp &#39;3/28*)
+ End If
+
+                    If (T_A_temp &gt; Interval_A_Ni_down) And (T_A_temp &lt; Interval_A_Ni_up) Then
+                              ZZZ(13) = ZZZ(13) + Interval_A_Ni_up - T_A_temp &#39;3/27*)
+                             T_A_temp = T_A_temp + Interval_A_Ni_up - T_A_temp &#39;3/28*)
+                    End If
+
+ T_A_temp = T_A_temp - Dev_Ni_A
+
+                     If (T_A_temp &lt; 400) Then
+                              ZZZ(13) = ZZZ(13) + 400 - T_A_temp &#39;5/7*)
+                             T_A_temp = T_A_temp + 400 - T_A_temp &#39;5/7*)
+                    End If
+
+ If (T_A_temp * 2) &lt; Interval_A_Pd_up Then &#39;3/24增加*)
+           ZZZ(13) = ZZZ(13) + (Interval_A_Pd_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Pd_up / 2) - T_A_temp &#39;3/28*)
+End If
+
+                   If (T_A_temp &gt; Interval_A_Pd_down) And (T_A_temp &lt; Interval_A_Pd_up) Then
+                            ZZZ(13) = ZZZ(13) + Interval_A_Pd_up - T_A_temp &#39;3/27*)
+                            T_A_temp = T_A_temp + Interval_A_Pd_up - T_A_temp &#39;3/28*)
+                  End If
+
+ T_A_temp = T_A_temp - Dev_Pd_A
+                
+                  If (T_A_temp &lt; 400) Then
+                              ZZZ(13) = ZZZ(13) + 400 - T_A_temp &#39;5/7*)
+                             T_A_temp = T_A_temp + 400 - T_A_temp &#39;5/7*)
+                    End If
+
+ If (T_A_temp * 2) &lt; Interval_A_Au_up Then &#39;3/24增加*)
+           ZZZ(13) = ZZZ(13) + (Interval_A_Au_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Au_up / 2) - T_A_temp &#39;3/28*)
+End If
+
+                If (T_A_temp &gt; Interval_A_Au_down) And (T_A_temp &lt; Interval_A_Au_up) Then
+                          ZZZ(13) = ZZZ(13) + Interval_A_Au_up - T_A_temp &#39;3/27*)
+                         T_A_temp = T_A_temp + Interval_A_Au_up - T_A_temp &#39;3/28*)
+               End If
+</code></pre>
+<p> ‘关于金槽的可以考虑舍弃这部分判断，但是考虑到后面的：Cycle_time_A&#x3D; T_A_temp+Dev_A(5)还是加上吧*)<br>     T_A_temp &#x3D; T_A_temp - Dev_Au_A</p>
+<pre><code> If T_A_temp &lt; 720 Then
+         ZZZ(13) = ZZZ(13) + 720 - T_A_temp
+End If
+</code></pre>
+<p> If i &#x3D; 1 Then<br>    Cycle_time_A &#x3D; T_A(4) + ZZZ(13)<br>End If<br>If i &gt; 1 Then<br>    Cycle_time_A &#x3D; Cycle_time_A + ZZZ(13)<br>End If<br>    Next i<br>    END_A &#x3D; END_A + 1<br>End If</p>
+<p>‘———————————————————————————————————————————————————————–*)</p>
+<p>If (Q_A(2) &gt; T_A(3)) And (END_A &lt; 1) Then</p>
+<pre><code>For i = 1 To 10
+    If i = 1 Then
+Cycle_time_A = T_A(3)
+    End If
+    ZZZ(13) = 0
+T_A_temp = Cycle_time_A
+Interval_A_3_up = Q_A(2)
+Interval_A_3_down = T_A(3)
+
+ &#39;检查周期时间是否满足预溶出、镍槽、钯槽、金槽的不套圈范围，以及是否满足各个槽体的安全区间若发现增加完差值之后有不满足槽体的安全区间，则补加时间，使之满足条件*)
+ If (T_A_temp * 2) &lt; Interval_A_YRC_up Then &#39;3/24增加*)
+    ZZZ(13) = ZZZ(13) + (Interval_A_YRC_up / 2) - T_A_temp &#39;3/27*)
+    T_A_temp = T_A_temp + (Interval_A_YRC_up / 2) - T_A_temp &#39;3/28*)
+  End If
+
+                       If (T_A_temp &gt; Interval_A_YRC_down) And (T_A_temp &lt; Interval_A_YRC_up) Then
+                                 ZZZ(13) = ZZZ(13) + Interval_A_YRC_up - T_A_temp &#39;3/27*)
+                                T_A_temp = T_A_temp + Interval_A_YRC_up - T_A_temp &#39;3/28*)
+                      End If
+
+ T_A_temp = T_A_temp - Dev_YRC_A
+ 
+ If T_A_temp &lt; 810 Then
+     ZZZ(13) = ZZZ(13) + 810 - T_A_temp
+     T_A_temp = T_A_temp + 810 - T_A_temp &#39;出预溶出槽后间隔时间必须大于720秒→810--3/29*)
+End If
+ 
+  If (T_A_temp * 2) &lt; Interval_A_Ni_up Then &#39;3/24增加*)
+            ZZZ(13) = ZZZ(13) + (Interval_A_Ni_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Ni_up / 2) - T_A_temp &#39;3/28*)
+ End If
+
+                    If (T_A_temp &gt; Interval_A_Ni_down) And (T_A_temp &lt; Interval_A_Ni_up) Then
+                              ZZZ(13) = ZZZ(13) + Interval_A_Ni_up - T_A_temp &#39;3/27*)
+                             T_A_temp = T_A_temp + Interval_A_Ni_up - T_A_temp &#39;3/28*)
+                    End If
+
+ T_A_temp = T_A_temp - Dev_Ni_A
+                  
+                   If (T_A_temp &lt; 400) Then
+                              ZZZ(13) = ZZZ(13) + 400 - T_A_temp &#39;5/7*)
+                             T_A_temp = T_A_temp + 400 - T_A_temp &#39;5/7*)
+                    End If
+
+ If (T_A_temp * 2) &lt; Interval_A_Pd_up Then &#39;3/24增加*)
+           ZZZ(13) = ZZZ(13) + (Interval_A_Pd_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Pd_up / 2) - T_A_temp &#39;3/28*)
+End If
+
+                   If (T_A_temp &gt; Interval_A_Pd_down) And (T_A_temp &lt; Interval_A_Pd_up) Then
+                            ZZZ(13) = ZZZ(13) + Interval_A_Pd_up - T_A_temp &#39;3/27*)
+                            T_A_temp = T_A_temp + Interval_A_Pd_up - T_A_temp &#39;3/28*)
+                  End If
+
+ T_A_temp = T_A_temp - Dev_Pd_A
+                   
+                    If (T_A_temp &lt; 400) Then
+                              ZZZ(13) = ZZZ(13) + 400 - T_A_temp &#39;5/7*)
+                             T_A_temp = T_A_temp + 400 - T_A_temp &#39;5/7*)
+                    End If
+                   
+ If (T_A_temp * 2) &lt; Interval_A_Au_up Then &#39;3/24增加*)
+           ZZZ(13) = ZZZ(13) + (Interval_A_Au_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Au_up / 2) - T_A_temp &#39;3/28*)
+End If
+
+                If (T_A_temp &gt; Interval_A_Au_down) And (T_A_temp &lt; Interval_A_Au_up) Then
+                          ZZZ(13) = ZZZ(13) + Interval_A_Au_up - T_A_temp &#39;3/27*)
+                         T_A_temp = T_A_temp + Interval_A_Au_up - T_A_temp &#39;3/28*)
+               End If
+</code></pre>
+<p> ‘关于金槽的可以考虑舍弃这部分判断，但是考虑到后面的：Cycle_time_A&#x3D; T_A_temp+Dev_A(5)还是加上吧*)<br>     T_A_temp &#x3D; T_A_temp - Dev_Au_A</p>
+<pre><code> If T_A_temp &lt; 720 Then
+         ZZZ(13) = ZZZ(13) + 720 - T_A_temp
+End If
+
+ If i = 1 Then
+
+Cycle_time_A = T_A(3) + ZZZ(13)
+</code></pre>
+<p>End If<br>If i &gt; 1 Then<br>    Cycle_time_A &#x3D; Cycle_time_A + ZZZ(13)<br>End If<br>    Next i</p>
+<pre><code>END_A = END_A + 1
+</code></pre>
+<p>End If</p>
+<p>‘———————————————————————————————————————————————————————–*)</p>
+<p>If (Q_A(1) &gt; T_A(2)) And (END_A &lt; 1) Then</p>
+<pre><code>For i = 1 To 10
+    If i = 1 Then
+Cycle_time_A = T_A(2)
+    End If
+    ZZZ(13) = 0
+T_A_temp = Cycle_time_A
+Interval_A_2_up = Q_A(1)
+Interval_A_2_down = T_A(2)
+</code></pre>
+<p> ‘检查周期时间是否满足预溶出、镍槽、钯槽、金槽的不套圈范围，以及是否满足各个槽体的安全区间若发现增加完差值之后有不满足槽体的安全区间，则补加时间，使之满足条件*)<br>     If (T_A_temp * 2) &lt; Interval_A_YRC_up Then ‘3&#x2F;24增加*)<br>        ZZZ(13) &#x3D; ZZZ(13) + (Interval_A_YRC_up &#x2F; 2) - T_A_temp ‘3&#x2F;27*)<br>        T_A_temp &#x3D; T_A_temp + (Interval_A_YRC_up &#x2F; 2) - T_A_temp ‘3&#x2F;28*)<br>      End If</p>
+<pre><code>                       If (T_A_temp &gt; Interval_A_YRC_down) And (T_A_temp &lt; Interval_A_YRC_up) Then
+                                 ZZZ(13) = ZZZ(13) + Interval_A_YRC_up - T_A_temp &#39;3/27*)
+                                T_A_temp = T_A_temp + Interval_A_YRC_up - T_A_temp &#39;3/28*)
+                      End If
+
+ T_A_temp = T_A_temp - Dev_YRC_A
+ 
+ If T_A_temp &lt; 810 Then
+     ZZZ(13) = ZZZ(13) + 810 - T_A_temp
+     T_A_temp = T_A_temp + 810 - T_A_temp &#39;出预溶出槽后间隔时间必须大于720秒→810--3/29*)
+End If
+ 
+  If (T_A_temp * 2) &lt; Interval_A_Ni_up Then &#39;3/24增加*)
+            ZZZ(13) = ZZZ(13) + (Interval_A_Ni_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Ni_up / 2) - T_A_temp &#39;3/28*)
+ End If
+
+                    If (T_A_temp &gt; Interval_A_Ni_down) And (T_A_temp &lt; Interval_A_Ni_up) Then
+                              ZZZ(13) = ZZZ(13) + Interval_A_Ni_up - T_A_temp &#39;3/27*)
+                             T_A_temp = T_A_temp + Interval_A_Ni_up - T_A_temp &#39;3/28*)
+                    End If
+
+ T_A_temp = T_A_temp - Dev_Ni_A
+
+                     If (T_A_temp &lt; 400) Then
+                              ZZZ(13) = ZZZ(13) + 400 - T_A_temp &#39;5/7*)
+                             T_A_temp = T_A_temp + 400 - T_A_temp &#39;5/7*)
+                    End If
+
+ If (T_A_temp * 2) &lt; Interval_A_Pd_up Then &#39;3/24增加*)
+           ZZZ(13) = ZZZ(13) + (Interval_A_Pd_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Pd_up / 2) - T_A_temp &#39;3/28*)
+End If
+
+                   If (T_A_temp &gt; Interval_A_Pd_down) And (T_A_temp &lt; Interval_A_Pd_up) Then
+                            ZZZ(13) = ZZZ(13) + Interval_A_Pd_up - T_A_temp &#39;3/27*)
+                            T_A_temp = T_A_temp + Interval_A_Pd_up - T_A_temp &#39;3/28*)
+                  End If
+
+ T_A_temp = T_A_temp - Dev_Pd_A
+
+                  If (T_A_temp &lt; 400) Then
+                              ZZZ(13) = ZZZ(13) + 400 - T_A_temp &#39;5/7*)
+                             T_A_temp = T_A_temp + 400 - T_A_temp &#39;5/7*)
+                    End If
+
+ If (T_A_temp * 2) &lt; Interval_A_Au_up Then &#39;3/24增加*)
+           ZZZ(13) = ZZZ(13) + (Interval_A_Au_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Au_up / 2) - T_A_temp &#39;3/28*)
+End If
+
+                If (T_A_temp &gt; Interval_A_Au_down) And (T_A_temp &lt; Interval_A_Au_up) Then
+                          ZZZ(13) = ZZZ(13) + Interval_A_Au_up - T_A_temp &#39;3/27*)
+                         T_A_temp = T_A_temp + Interval_A_Au_up - T_A_temp &#39;3/28*)
+               End If
+</code></pre>
+<p> ‘关于金槽的可以考虑舍弃这部分判断，但是考虑到后面的：Cycle_time_A&#x3D; T_A_temp+Dev_A(5)还是加上吧*)<br>     T_A_temp &#x3D; T_A_temp - Dev_Au_A</p>
+<pre><code> If T_A_temp &lt; 720 Then
+         ZZZ(13) = ZZZ(13) + 720 - T_A_temp
+End If
+
+ If i = 1 Then
+
+Cycle_time_A = T_A(2) + ZZZ(13)
+</code></pre>
+<p>End If<br>If i &gt; 1 Then<br>    Cycle_time_A &#x3D; Cycle_time_A + ZZZ(13)<br>End If<br>    Next i</p>
+<pre><code>END_A = END_A + 1
+</code></pre>
+<p>End If</p>
+<p>‘———————————————————————————————————————————————————————–*)</p>
+<p>If T_A(1) &gt; 810 And (END_A &lt; 1) Then</p>
+<pre><code>    For i = 1 To 10
+    If i = 1 Then
+Cycle_time_A = T_A(1)
+    End If
+    ZZZ(13) = 0
+ &#39;寻找最合适的周期时间！！！！！这个需要改，单独计算，不可以全部堆再一起计算*)
+T_A_temp = Cycle_time_A
+Interval_A_1_up = QQT
+Interval_A_1_down = T_A(1) + Transfer(5)
+ &#39;检查周期时间是否满足预溶出、镍槽、钯槽、金槽的不套圈范围，以及是否满足各个槽体的安全区间若发现增加完差值之后有不满足槽体的安全区间，则补加时间，使之满足条件*)
+ If (T_A_temp * 2) &lt; Interval_A_YRC_up Then &#39;3/24增加*)
+    ZZZ(13) = ZZZ(13) + (Interval_A_YRC_up / 2) - T_A_temp &#39;3/27*)
+    T_A_temp = T_A_temp + (Interval_A_YRC_up / 2) - T_A_temp &#39;3/28*)
+  End If
+
+                       If (T_A_temp &gt; Interval_A_YRC_down) And (T_A_temp &lt; Interval_A_YRC_up) Then
+                                 ZZZ(13) = ZZZ(13) + Interval_A_YRC_up - T_A_temp &#39;3/27*)
+                                T_A_temp = T_A_temp + Interval_A_YRC_up - T_A_temp &#39;3/28*)
+                      End If
+
+ T_A_temp = T_A_temp - Dev_YRC_A
+ 
+ If T_A_temp &lt; 810 Then
+     ZZZ(13) = ZZZ(13) + 810 - T_A_temp
+     T_A_temp = T_A_temp + 810 - T_A_temp &#39;出预溶出槽后间隔时间必须大于720秒→810--3/29*)
+End If
+ 
+  If (T_A_temp * 2) &lt; Interval_A_Ni_up Then &#39;3/24增加*)
+            ZZZ(13) = ZZZ(13) + (Interval_A_Ni_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Ni_up / 2) - T_A_temp &#39;3/28*)
+ End If
+
+                    If (T_A_temp &gt; Interval_A_Ni_down) And (T_A_temp &lt; Interval_A_Ni_up) Then
+                              ZZZ(13) = ZZZ(13) + Interval_A_Ni_up - T_A_temp &#39;3/27*)
+                             T_A_temp = T_A_temp + Interval_A_Ni_up - T_A_temp &#39;3/28*)
+                    End If
+
+ T_A_temp = T_A_temp - Dev_Ni_A
+
+                     If (T_A_temp &lt; 400) Then
+                              ZZZ(13) = ZZZ(13) + 400 - T_A_temp &#39;5/7*)
+                             T_A_temp = T_A_temp + 400 - T_A_temp &#39;5/7*)
+                    End If
+
+ If (T_A_temp * 2) &lt; Interval_A_Pd_up Then &#39;3/24增加*)
+           ZZZ(13) = ZZZ(13) + (Interval_A_Pd_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Pd_up / 2) - T_A_temp &#39;3/28*)
+End If
+
+                   If (T_A_temp &gt; Interval_A_Pd_down) And (T_A_temp &lt; Interval_A_Pd_up) Then
+                            ZZZ(13) = ZZZ(13) + Interval_A_Pd_up - T_A_temp &#39;3/27*)
+                            T_A_temp = T_A_temp + Interval_A_Pd_up - T_A_temp &#39;3/28*)
+                  End If
+
+ T_A_temp = T_A_temp - Dev_Pd_A
+
+                  If (T_A_temp &lt; 400) Then
+                              ZZZ(13) = ZZZ(13) + 400 - T_A_temp &#39;5/7*)
+                             T_A_temp = T_A_temp + 400 - T_A_temp &#39;5/7*)
+                    End If
+
+ If (T_A_temp * 2) &lt; Interval_A_Au_up Then &#39;3/24增加*)
+           ZZZ(13) = ZZZ(13) + (Interval_A_Au_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Au_up / 2) - T_A_temp &#39;3/28*)
+End If
+
+                If (T_A_temp &gt; Interval_A_Au_down) And (T_A_temp &lt; Interval_A_Au_up) Then
+                          ZZZ(13) = ZZZ(13) + Interval_A_Au_up - T_A_temp &#39;3/27*)
+                         T_A_temp = T_A_temp + Interval_A_Au_up - T_A_temp &#39;3/28*)
+               End If
+</code></pre>
+<p> ‘关于金槽的可以考虑舍弃这部分判断，但是考虑到后面的：Cycle_time_A&#x3D; T_A_temp+Dev_A(5)还是加上吧*)<br>     T_A_temp &#x3D; T_A_temp - Dev_Au_A</p>
+<pre><code> If T_A_temp &lt; 720 Then
+         ZZZ(13) = ZZZ(13) + 720 - T_A_temp
+End If
+
+ If i = 1 Then
+Cycle_time_A = T_A(1) + ZZZ(13)
+</code></pre>
+<p>End If<br>   If i &gt; 1 Then<br>    Cycle_time_A &#x3D; Cycle_time_A + ZZZ(13)<br>End If<br>    Next i</p>
+<pre><code>END_A = END_A + 1
+</code></pre>
+<p>End If</p>
+<p>‘考虑前一挂是陪镀板时的情况，后一挂强制周期时间为1300s*)’5&#x2F;26修改，9999陪镀板后面上料时增加前后挂预溶出判断*)<br>If Z(2) &gt; 8000 Then<br>    If YRC_time &gt; YRC_now_time Then<br>         Cycle_time_A &#x3D; 810 + YRC_time - YRC_now_time ‘5&#x2F;22修改*)<br>    ElseIf YRC_time &lt;&#x3D; YRC_now_time Then<br>        Cycle_time_A &#x3D; 810<br>    End If<br>End If</p>
+<p>If END_A &gt; 0 Then ‘结束标志位*)<br>    END_A &#x3D; END_A - 1<br>End If</p>
+<p>‘解决拖缸板时间问题———————————————————————————————</p>
+<p>‘不拖金槽——————————————</p>
+<p>If (ZZ(4) &lt; 100) And (ZZ(3) &gt; 100) Then</p>
+<pre><code>For i = 1 To 10
+    If i = 1 Then
+        Cycle_time_A = Interval_A_Ni_up
+    End If
+    ZZZ(13) = 0
+ &#39;寻找最合适的周期时间！！！！！这个需要改，单独计算，不可以全部堆再一起计算*)
+T_A_temp = Cycle_time_A
+Interval_A_1_up = QQT
+Interval_A_1_down = T_A(1) + Transfer(5)
+ &#39;检查周期时间是否满足预溶出、镍槽、钯槽、金槽的不套圈范围，以及是否满足各个槽体的安全区间若发现增加完差值之后有不满足槽体的安全区间，则补加时间，使之满足条件*)
+ If (T_A_temp * 2) &lt; Interval_A_YRC_up Then &#39;3/24增加*)
+    ZZZ(13) = ZZZ(13) + (Interval_A_YRC_up / 2) - T_A_temp &#39;3/27*)
+    T_A_temp = T_A_temp + (Interval_A_YRC_up / 2) - T_A_temp &#39;3/28*)
+  End If
+
+                       If (T_A_temp &gt; Interval_A_YRC_down) And (T_A_temp &lt; Interval_A_YRC_up) Then
+                                 ZZZ(13) = ZZZ(13) + Interval_A_YRC_up - T_A_temp &#39;3/27*)
+                                T_A_temp = T_A_temp + Interval_A_YRC_up - T_A_temp &#39;3/28*)
+                      End If
+
+ T_A_temp = T_A_temp - Dev_YRC_A
+ 
+ If T_A_temp &lt; 810 Then
+     ZZZ(13) = ZZZ(13) + 810 - T_A_temp
+     T_A_temp = T_A_temp + 810 - T_A_temp &#39;出预溶出槽后间隔时间必须大于720秒→810--3/29*)
+End If
+ 
+  If (T_A_temp * 2) &lt; Interval_A_Ni_up Then &#39;3/24增加*)
+            ZZZ(13) = ZZZ(13) + (Interval_A_Ni_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Ni_up / 2) - T_A_temp &#39;3/28*)
+ End If
+
+                    If (T_A_temp &gt; Interval_A_Ni_down) And (T_A_temp &lt; Interval_A_Ni_up) Then
+                              ZZZ(13) = ZZZ(13) + Interval_A_Ni_up - T_A_temp &#39;3/27*)
+                             T_A_temp = T_A_temp + Interval_A_Ni_up - T_A_temp &#39;3/28*)
+                    End If
+
+ T_A_temp = T_A_temp - Dev_Ni_A
+
+                     If (T_A_temp &lt; 400) Then
+                              ZZZ(13) = ZZZ(13) + 400 - T_A_temp &#39;5/7*)
+                             T_A_temp = T_A_temp + 400 - T_A_temp &#39;5/7*)
+                    End If
+
+ If (T_A_temp * 2) &lt; (Interval_A_Pd_up) Then &#39;确保双槽时也不会有问题
+           ZZZ(13) = ZZZ(13) + ((Interval_A_Pd_up) / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + ((Interval_A_Pd_up) / 2) - T_A_temp &#39;3/28*)
+End If
+
+                   If (T_A_temp &gt; (Interval_A_Pd_down)) And (T_A_temp &lt; (Interval_A_Pd_up)) Then
+                            ZZZ(13) = ZZZ(13) + (Interval_A_Pd_up) - T_A_temp  &#39;3/27*)
+                            T_A_temp = T_A_temp + (Interval_A_Pd_up) - T_A_temp  &#39;3/28*)
+                  End If
+
+ T_A_temp = T_A_temp - Dev_Pd_A
+
+                  If (T_A_temp &lt; 400) Then
+                              ZZZ(13) = ZZZ(13) + 400 - T_A_temp &#39;5/7*)
+                             T_A_temp = T_A_temp + 400 - T_A_temp &#39;5/7*)
+                    End If
+                    
+    If i = 1 Then
+Cycle_time_A = Interval_A_Ni_up + ZZZ(13)
+End If
+</code></pre>
+<p>   If i &gt; 1 Then<br>    Cycle_time_A &#x3D; Cycle_time_A + ZZZ(13)<br>    End If</p>
+<p> Next i</p>
+<p> Transfer(6) &#x3D; Cycle_time_A</p>
+<p> For i &#x3D; 1 To 10<br>    ZZZ(13) &#x3D; 0</p>
+<pre><code> If (Cycle_time_A * 2) &lt; (Interval_A_Au_up) Then  &#39;3/24增加*)
+           ZZZ(13) = ZZZ(13) + ((Interval_A_Au_up) / 2) - Cycle_time_A  &#39;3/27*)
+           Cycle_time_A = Cycle_time_A + ((Interval_A_Au_up) / 2) - Cycle_time_A  &#39;3/28*)
+End If
+
+                If (Cycle_time_A &gt; (AU_time - 300)) And (Cycle_time_A &lt; (Interval_A_Au_up)) Then
+                          ZZZ(13) = ZZZ(13) + (Interval_A_Au_up) - Cycle_time_A &#39;3/27*)
+                         Cycle_time_A = Cycle_time_A + (Interval_A_Au_up) - Cycle_time_A &#39;3/28*)
+               End If
+</code></pre>
+<p>Cycle_time_A &#x3D; Cycle_time_A - Dev_Au_A</p>
+<pre><code> If Cycle_time_A &lt; 300 Then
+         ZZZ(13) = ZZZ(13) + 300 - Cycle_time_A
+End If
+
+Cycle_time_A = Transfer(6) + ZZZ(13)
+</code></pre>
+<p> Next i</p>
+<p>End If</p>
+<p>‘不拖金槽+钯槽——————————————</p>
+<p>If (ZZ(4) &lt; 100) And (ZZ(3) &lt; 99) Then</p>
+<pre><code>For i = 1 To 10
+    If i = 1 Then
+        Cycle_time_A = Interval_A_Ni_up
+    End If
+    ZZZ(13) = 0
+ &#39;寻找最合适的周期时间！！！！！这个需要改，单独计算，不可以全部堆再一起计算*)
+T_A_temp = Cycle_time_A
+Interval_A_1_up = QQT
+Interval_A_1_down = T_A(1) + Transfer(5)
+ &#39;检查周期时间是否满足预溶出、镍槽、钯槽、金槽的不套圈范围，以及是否满足各个槽体的安全区间若发现增加完差值之后有不满足槽体的安全区间，则补加时间，使之满足条件*)
+ If (T_A_temp * 2) &lt; Interval_A_YRC_up Then &#39;3/24增加*)
+    ZZZ(13) = ZZZ(13) + (Interval_A_YRC_up / 2) - T_A_temp &#39;3/27*)
+    T_A_temp = T_A_temp + (Interval_A_YRC_up / 2) - T_A_temp &#39;3/28*)
+  End If
+
+                       If (T_A_temp &gt; Interval_A_YRC_down) And (T_A_temp &lt; Interval_A_YRC_up) Then
+                                 ZZZ(13) = ZZZ(13) + Interval_A_YRC_up - T_A_temp &#39;3/27*)
+                                T_A_temp = T_A_temp + Interval_A_YRC_up - T_A_temp &#39;3/28*)
+                      End If
+
+ T_A_temp = T_A_temp - Dev_YRC_A
+ 
+ If T_A_temp &lt; 810 Then
+     ZZZ(13) = ZZZ(13) + 810 - T_A_temp
+     T_A_temp = T_A_temp + 810 - T_A_temp &#39;出预溶出槽后间隔时间必须大于720秒→810--3/29*)
+End If
+ 
+  If (T_A_temp * 2) &lt; Interval_A_Ni_up Then &#39;3/24增加*)
+            ZZZ(13) = ZZZ(13) + (Interval_A_Ni_up / 2) - T_A_temp &#39;3/27*)
+           T_A_temp = T_A_temp + (Interval_A_Ni_up / 2) - T_A_temp &#39;3/28*)
+ End If
+
+                    If (T_A_temp &gt; Interval_A_Ni_down) And (T_A_temp &lt; Interval_A_Ni_up) Then
+                              ZZZ(13) = ZZZ(13) + Interval_A_Ni_up - T_A_temp &#39;3/27*)
+                             T_A_temp = T_A_temp + Interval_A_Ni_up - T_A_temp &#39;3/28*)
+                    End If
+
+ T_A_temp = T_A_temp - Dev_Ni_A
+
+                     If (T_A_temp &lt; 400) Then
+                              ZZZ(13) = ZZZ(13) + 400 - T_A_temp &#39;5/7*)
+                             T_A_temp = T_A_temp + 400 - T_A_temp &#39;5/7*)
+                    End If
+                    
+  If i = 1 Then
+Cycle_time_A = Interval_A_Ni_up + ZZZ(13)
+End If
+</code></pre>
+<p>   If i &gt; 1 Then<br>    Cycle_time_A &#x3D; Cycle_time_A + ZZZ(13)<br>    End If</p>
+<p> Next i</p>
+<pre><code>  Transfer(6) = Cycle_time_A
+</code></pre>
+<p>For i &#x3D; 1 To 10<br>    ZZZ(13) &#x3D; 0<br>     If (Cycle_time_A * 2) &lt; (Interval_A_Pd_up) Then ‘确保双槽时也不会有问题<br>               ZZZ(13) &#x3D; ZZZ(13) + ((Interval_A_Pd_up) &#x2F; 2) - Cycle_time_A ‘3&#x2F;27*)<br>               Cycle_time_A &#x3D; Cycle_time_A + ((Interval_A_Pd_up) &#x2F; 2) - Cycle_time_A ‘3&#x2F;28*)<br>    End If</p>
+<pre><code>                   If (Cycle_time_A &gt; (PD_timer - 350)) And (Cycle_time_A &lt; (Interval_A_Pd_up)) Then
+                            ZZZ(13) = ZZZ(13) + (Interval_A_Pd_up) - Cycle_time_A  &#39;3/27*)
+                            Cycle_time_A = Cycle_time_A + (Interval_A_Pd_up) - Cycle_time_A  &#39;3/28*)
+                  End If
+
+  Cycle_time_A = Cycle_time_A - Dev_Pd_A
+
+
+                  If (Cycle_time_A &lt; 350) Then
+                              ZZZ(13) = ZZZ(13) + 350 - Cycle_time_A &#39;5/7*)
+                             Cycle_time_A = Cycle_time_A + 350 - Cycle_time_A &#39;5/7*)
+                    End If
+                    
+                 
+
+ If (Cycle_time_A * 2) &lt; (Interval_A_Au_up) Then  &#39;3/24增加*)
+           ZZZ(13) = ZZZ(13) + ((Interval_A_Au_up) / 2) - Cycle_time_A  &#39;3/27*)
+           Cycle_time_A = Cycle_time_A + ((Interval_A_Au_up) / 2) - Cycle_time_A  &#39;3/28*)
+End If
+
+                If (Cycle_time_A &gt; (AU_time - 300)) And (Cycle_time_A &lt; (Interval_A_Au_up)) Then
+                          ZZZ(13) = ZZZ(13) + (Interval_A_Au_up) - Cycle_time_A &#39;3/27*)
+                         Cycle_time_A = Cycle_time_A + (Interval_A_Au_up) - Cycle_time_A &#39;3/28*)
+               End If
+
+ Cycle_time_A = Cycle_time_A - Dev_Au_A
+ 
+ If (Cycle_time_A &gt; (-300)) And (Cycle_time_A &lt; (300)) Then &#39;待补充！@！！！！！！！
+         ZZZ(13) = ZZZ(13) + 300 - Cycle_time_A
+         
+End If
+
+Cycle_time_A = Transfer(6) + ZZZ(13)
+</code></pre>
+<p> Next i</p>
+<p>End If</p>
+<p>‘考虑前一挂是陪镀板时的情况，后一挂强制周期时间为1300s*)’5&#x2F;26修改，9999陪镀板后面上料时增加前后挂预溶出判断*)<br>If Z(2) &gt; 8000 Then<br>    If YRC_time &gt; YRC_now_time Then<br>         Cycle_time_A &#x3D; 810 + YRC_time - YRC_now_time ‘5&#x2F;22修改*)<br>    ElseIf YRC_time &lt;&#x3D; YRC_now_time Then<br>        Cycle_time_A &#x3D; 810<br>    End If<br>End If</p>
+<p>If END_A &gt; 0 Then ‘结束标志位*)<br>    END_A &#x3D; END_A - 1<br>End If</p>
+<p> ST &#x3D; Cycle_time_A</p>
+<p>End Function</p>
 <h1 id="实际现场测试"><a href="#实际现场测试" class="headerlink" title="实际现场测试"></a>实际现场测试</h1><h1 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h1><h1 id="讨论"><a href="#讨论" class="headerlink" title="讨论"></a>讨论</h1><h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2025/08/24/%E5%8C%96%E5%AD%A6%E9%95%8D%E9%92%AF%E9%87%91%E5%A4%A9%E8%BD%A6%E5%BC%80%E6%94%BE%E7%A8%8B%E5%BA%8F%E6%9C%80%E4%BD%B3%E4%B8%8A%E6%96%99%E9%97%B4%E9%9A%94%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97%E7%AE%97%E6%B3%95/" data-id="cmezsbabl00000cq58k67ey2h" data-title="化学镍钯金天车开放程序最佳上料间隔时间计算算法" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2025/08/24/%E5%8C%96%E5%AD%A6%E9%95%8D%E9%92%AF%E9%87%91%E5%A4%A9%E8%BD%A6%E5%BC%80%E6%94%BE%E7%A8%8B%E5%BA%8F%E6%9C%80%E4%BD%B3%E4%B8%8A%E6%96%99%E9%97%B4%E9%9A%94%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97%E7%AE%97%E6%B3%95/" data-id="cmeztjl4c0003xcq5g6ragv94" data-title="化学镍钯金天车开放程序最佳上料间隔时间计算算法" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -241,7 +1015,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2025/08/24/the-first-try/" data-id="cmezsbabr00040cq5fmbk1dhg" data-title="the first try" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2025/08/24/the-first-try/" data-id="cmeztjl4b0002xcq5gplq27st" data-title="the first try" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -281,7 +1055,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2025/08/24/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0/" data-id="cmezsbabw000h0cq53pc54bxh" data-title="我的第一篇文章" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2025/08/24/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0/" data-id="cmeztjl4e0006xcq5ejdk1rn9" data-title="我的第一篇文章" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -332,7 +1106,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2025/08/24/hello-world/" data-id="cmezsbabo00010cq55lbsahpq" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2025/08/24/hello-world/" data-id="cmeztjl470000xcq55lrbdok9" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -394,6 +1168,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2025/08/31/%E7%94%B5%E6%9C%BA-%E6%B3%B5%E5%A4%B4/">电机+泵头</a>
+          </li>
         
           <li>
             <a href="/2025/08/24/%E5%8C%96%E5%AD%A6%E9%95%8D%E9%92%AF%E9%87%91%E5%A4%A9%E8%BD%A6%E5%BC%80%E6%94%BE%E7%A8%8B%E5%BA%8F%E6%9C%80%E4%BD%B3%E4%B8%8A%E6%96%99%E9%97%B4%E9%9A%94%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97%E7%AE%97%E6%B3%95/">化学镍钯金天车开放程序最佳上料间隔时间计算算法</a>
